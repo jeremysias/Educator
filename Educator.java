@@ -13,7 +13,7 @@ public class Educator {
 	  //makes a directory -- this should not be called directly
 	  public static boolean _makeFolder(String folderName){
 	    File file = new File(folderName);
-	    return file.mkdir();
+	    return file.mkdirs();
 	  }
 	  
 	  //can be used to delete a folder
@@ -26,20 +26,22 @@ public class Educator {
 	  }
 	  
 	  public static boolean makeSubject(String subjectName){
-	    String folder = "Subject/" + subjectName;
+	    String folder = "src/Subjects/" + subjectName;
 	    return _makeFolder(folder);
 	  }
 	  
 	  public static boolean makeLessonCategory(String subjectName, String CategoryName){
-	    String folder = "Subject/" + subjectName + "/" + CategoryName;
+	    String folder = "src/Subjects/" + subjectName + "/" + CategoryName;
 	    return _makeFolder(folder);
 	  }
 	  
+	  //creates a lesson
 	  public static boolean makeLesson(String subjectName, String CategoryName, String lessonName){
 	    boolean result = false;
-		String folder = "Subject/" + subjectName + "/" + CategoryName + "/" + lessonName;
+		String folder = "src/Subjects/" + subjectName + "/" + CategoryName + "/" + lessonName;
 	    result =  _makeFolder(folder);
-	    result = copyFile("Files/index.html", folder + "/");
+	  //  result = copyFile("Files/index.html", folder + "/");
+	    result = createIndexFile(folder);
 	    
 	    return result;
 	  }
@@ -81,7 +83,7 @@ public class Educator {
 	  //The result will be a blank text file name "index.txt"
 	  public static boolean createIndexFile(String lessonFolder){
 		  try{
-			  File file = new File(lessonFolder + "index.txt");
+			  File file = new File(lessonFolder + "/index.txt");
 			  if(file.createNewFile()){
 				  System.out.println("File created successfully");
 				  return true;
@@ -99,14 +101,17 @@ public class Educator {
 	  public static boolean writeToIndex(String lessonPath, String title, String fileName){
 		  try{
 			  String content = title + ";" + fileName + "|";
-			  File file = new File(lessonPath + "index.txt");
+			  File file = new File(lessonPath + "/index.txt");
 			  
 			  if(!file.exists()){
-				  file.createNewFile();
+				  System.out.println("File does not exist");
+				  return false;
+				//  file.createNewFile();
 			  }
 			  
-			  FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			  FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
 			  BufferedWriter bw = new BufferedWriter(fw);
+		//	  bw.append(content);
 			  bw.write(content);
 			  bw.close();
 			  
@@ -115,9 +120,10 @@ public class Educator {
 			  
 		  }catch(IOException e){
 			  e.printStackTrace();
+			  return false;
 		  }
 		  
-		  return false;
+		  return true;
 	  }
 	  
 	  public static void displayFolderNames(String path){
@@ -164,9 +170,10 @@ public class Educator {
 	public static void main(String[] args) {
 		String [] results = new String[1];
 		results[0] = "Command not registered";
+		int argLength = args.length;
 		String cmd = args[0];
 		if(cmd.equals("getSubjects")){
-			String[] altResults = getFolderNames(".");
+			String[] altResults = getFolderNames("src/Subjects/");
 			int count = altResults.length;
 			for(int i = 0; i< count; i++){
 				
@@ -174,6 +181,60 @@ public class Educator {
 				
 			}
 			return;
+		}
+		if(cmd.equals("makeSubject")){
+			if(argLength > 1){
+				if(makeSubject(args[1]) == true){
+					System.out.println(args[1] + " created");
+				}
+				else{
+					System.out.println(args[1] + "could not be created or already exists");
+				}
+			}
+			else{
+				System.out.println("parameter: <Subject name>");
+			}
+			return;
+		}
+		if(cmd.equals("makeCategory")){
+			if(argLength > 2){
+				if(makeLessonCategory(args[1], args[2]) == true){
+					System.out.println(args[2] + " created");
+				}
+				else{
+					System.out.println(args[2] + "could not be created or already exists");
+				}
+			}
+			else{
+				System.out.println("parameters: <Subject name> <Category name>");
+			}
+			return;
+		}
+		if(cmd.equals("makeLesson")){
+			if(argLength > 3){
+				if(makeLesson(args[1], args[2], args[3]) == true){
+					System.out.println(args[3] + " created");
+				}
+				else{
+					System.out.println(args[3] + "could not be created or already exists");
+				}
+			}
+			else{
+				System.out.println("parameters: <Subject name> <Category name> <Lesson name>");
+			}
+		}
+		if(cmd.equals("write")){
+			if(argLength > 5){
+				String path = "src/Subjects/" + args[1] + "/" + args[2] + "/" + args[3];
+				if(writeToIndex(path, args[4], args[5]) == true){
+					System.out.println("Index written to successfully");
+				}
+				else{
+					System.out.println("write failed");
+				}
+			}
+			else
+				System.out.println("parameters: <Subject> <Category> <Lesson> <title> <filename>");
 		}
 		
 		// TODO Auto-generated method stub
