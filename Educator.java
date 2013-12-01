@@ -10,6 +10,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Educator {
+	
+	
+	/*
+	 * This program performs functions necessary for creating a file system
+	 * The heierarchy is as follows: Subject -> Category -> Lesson
+	 * Each lesson folder will have an index file which keeps track of files within the lesson
+	 * 
+	 * commands available:
+	 * 	makeSubject
+	 * 	makeCategory
+	 *  makeLesson
+	 *  write -- writes to index file
+	 *  addItem -- will take a file from the "Files" folder and put it into the lesson folder
+	 *  	It also adds the item to the index file
+	 *  
+	 */
+	
 	  //makes a directory -- this should not be called directly
 	  public static boolean _makeFolder(String folderName){
 	    File file = new File(folderName);
@@ -46,6 +63,9 @@ public class Educator {
 	    return result;
 	  }
 	  
+	  //copies a file
+	  //parameters: in - path and name of file to be copied
+	  //			out - path and name of destination file
 	  public static boolean copyFile(String in, String out){
 	    	InputStream inStream = null;
 	    	OutputStream outStream = null;
@@ -76,6 +96,34 @@ public class Educator {
 	    		return false;
 	    	}
 	   
+	  }
+	  
+/*		I may need this incomplete function later
+ *   public static String getFileName(String path){
+		  
+		  char[] pathCharArray = path.toCharArray();
+		  
+		  
+		  String fileName;
+		  return fileName;
+	  }
+	  
+*/  
+	  
+	  /* addFileToLesson() Takes an item from a folder and copies it into the lesson folder
+	  	Also adds a title and fileName to the index using writeToIndex()
+	  		parameters:
+	  			pathIn - location of file (but not the file)
+	    		pathOut - location of destination(but not the file)
+	    		title - Title of the lesson Item
+	    		fileName - name of file to be uploaded
+	   */
+	  public static boolean addFileToLesson(String pathIn, String lessonPath, String title, String fileName){
+		  pathIn = pathIn + fileName;
+		  String outPath = lessonPath + fileName;
+		  boolean results = copyFile(pathIn, outPath);
+		  results = writeToIndex(lessonPath, title, fileName);
+		  return results;
 	  }
 	  
 	  
@@ -126,6 +174,8 @@ public class Educator {
 		  return true;
 	  }
 	  
+	  
+	  //This may not end up being used 
 	  public static void displayFolderNames(String path){
 	    File file = new File(path);
 	    File []files = file.listFiles();
@@ -163,6 +213,7 @@ public class Educator {
 	/**
 	 * @param args
 	 */
+	  //This function may or may not be used
 	  public static boolean uploadItem(String item){
 		  
 		  return true;
@@ -235,6 +286,23 @@ public class Educator {
 			}
 			else
 				System.out.println("parameters: <Subject> <Category> <Lesson> <title> <filename>");
+		}
+	
+		if(cmd.equals("addItem")){
+			if(args.length > 5){
+				String subject = args[1];
+				String category = args[2];
+				String lesson = args[3];
+				String path1 = "Files/";
+				String path2 = "src/Subjects/" + subject + "/" + category + "/" + lesson +"/";
+				String title = args[4];
+				String fileName = args[5];
+				addFileToLesson(path1, path2, title, fileName);
+			}
+			else{
+				System.out.println("parameters: <Subject> <Category> <Lesson> <Title> <file name>");
+				return;
+			}
 		}
 		
 		// TODO Auto-generated method stub
